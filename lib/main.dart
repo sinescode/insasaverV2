@@ -153,6 +153,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _prefixController.text = _prefs.getString('prefix') ?? '';
     _showEmailInput = _prefs.getBool('show_email_input') ?? true;
     _passwordMethod = _prefs.getInt('password_method') ?? 0;
+    if (_passwordMethod == 1 && _passwordController.text.isEmpty) {
+      _generateRandomPassword();
+    }
     _emailController.addListener(() => _prefs.setString('email', _emailController.text));
     _usernameController.addListener(() => _prefs.setString('username', _usernameController.text));
     _auth_codeController.addListener(() => _prefs.setString('auth_code', _auth_codeController.text));
@@ -218,6 +221,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _usernameController.clear();
     _auth_codeController.clear();
     _passwordController.clear();
+    if (_passwordMethod == 1) {
+      _generateRandomPassword();
+    }
   }
   void _showSnackBar(String message, IconData icon, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -777,6 +783,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           onSelectionChanged: (Set<int> newSelection) {
                             setState(() {
                               _passwordMethod = newSelection.first;
+                              if (_passwordMethod == 1 && _passwordController.text.isEmpty) {
+                                _generateRandomPassword();
+                              }
                             });
                             _prefs.setInt('password_method', _passwordMethod);
                           },
