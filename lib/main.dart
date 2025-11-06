@@ -1,19 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 void main() {
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -86,20 +84,17 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class Account {
   String email;
   String username;
   String password;
   String auth_code;
-
   Account({
     required this.email,
     required this.username,
     required this.password,
     required this.auth_code,
   });
-
   factory Account.fromJson(Map<String, dynamic> json) {
     return Account(
       email: json['email'] ?? '',
@@ -108,7 +103,6 @@ class Account {
       auth_code: json['auth_code'] ?? '',
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       'email': email,
@@ -118,14 +112,11 @@ class Account {
     };
   }
 }
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
-
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<Account> _accounts = [];
@@ -135,20 +126,17 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   final TextEditingController _auth_codeController = TextEditingController();
   final TextEditingController _importController = TextEditingController();
   final TextEditingController _prefixController = TextEditingController();
-  final TextEditingController _wordPasswordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   late SharedPreferences _prefs;
-  
+ 
   bool _showEmailInput = true;
   int _passwordMethod = 0; // 0 for prefix method, 1 for word method
-  String _currentWordPassword = '';
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _loadData();
   }
-
   Future<void> _loadData() async {
     _prefs = await SharedPreferences.getInstance();
     final String? accountsJson = _prefs.getString('accounts');
@@ -158,93 +146,55 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         _accounts = decoded.map((item) => Account.fromJson(item)).toList();
       });
     }
-    
+   
     _emailController.text = _prefs.getString('email') ?? '';
     _usernameController.text = _prefs.getString('username') ?? '';
     _auth_codeController.text = _prefs.getString('auth_code') ?? '';
     _prefixController.text = _prefs.getString('prefix') ?? '';
-    _wordPasswordController.text = _prefs.getString('word_password') ?? '';
     _showEmailInput = _prefs.getBool('show_email_input') ?? true;
     _passwordMethod = _prefs.getInt('password_method') ?? 0;
-
     _emailController.addListener(() => _prefs.setString('email', _emailController.text));
     _usernameController.addListener(() => _prefs.setString('username', _usernameController.text));
     _auth_codeController.addListener(() => _prefs.setString('auth_code', _auth_codeController.text));
     _prefixController.addListener(() => _prefs.setString('prefix', _prefixController.text));
-    _wordPasswordController.addListener(() {
-      _prefs.setString('word_password', _wordPasswordController.text);
-      _generateWordPassword();
-    });
-
-    _generateWordPassword();
   }
-
   Future<void> _saveAccounts() async {
     final String accountsJson = jsonEncode(_accounts.map((acc) => acc.toJson()).toList());
     await _prefs.setString('accounts', accountsJson);
   }
-
   String get _currentPassword {
     if (_passwordMethod == 1) {
-      return _currentWordPassword;
+      return _passwordController.text.trim();
     } else {
       final String prefix = _prefixController.text.trim();
       final String day = DateTime.now().day.toString().padLeft(2, '0');
       return prefix.isNotEmpty ? '$prefix@$day' : '@$day';
     }
   }
-
-  void _generateWordPassword() {
-    final String word = _wordPasswordController.text.trim();
-    if (word.isEmpty) {
-      setState(() {
-        _currentWordPassword = '';
-      });
-      return;
+  void _generateRandomPassword() {
+    const String letters = 'abcdefghijklmnopqrstuvwxyz';
+    final Random random = Random();
+    final int randomLength = 8 + random.nextInt(6); // 8 to 13
+    String randomPart = '';
+    for (int i = 0; i < randomLength; i++) {
+      final int index = random.nextInt(letters.length);
+      final String char = letters[index];
+      randomPart += random.nextBool() ? char.toUpperCase() : char.toLowerCase();
     }
-
-    // Create mixed case: first char uppercase, then alternate
-    String mixedCaseWord = '';
-    for (int i = 0; i < word.length; i++) {
-      if (i == 0) {
-        mixedCaseWord += word[i].toUpperCase();
-      } else if (i % 2 == 0) {
-        mixedCaseWord += word[i].toUpperCase();
-      } else {
-        mixedCaseWord += word[i].toLowerCase();
-      }
-    }
-
-    // Ensure total length between 8-12 characters
     final String day = DateTime.now().day.toString().padLeft(2, '0');
-    String basePassword = mixedCaseWord + day;
-    
-    if (basePassword.length < 8) {
-      // Add padding if too short
-      basePassword = basePassword.padRight(8, 'X');
-    } else if (basePassword.length > 12) {
-      // Truncate if too long
-      basePassword = basePassword.substring(0, 12);
-    }
-
-    setState(() {
-      _currentWordPassword = basePassword;
-    });
+    _passwordController.text = randomPart + day;
   }
-
   void _copyPassword() {
     Clipboard.setData(ClipboardData(text: _currentPassword));
     _showSnackBar('Password copied to clipboard', Icons.content_copy);
   }
-
   void _submit() {
-    if (_usernameController.text.isEmpty || 
+    if (_usernameController.text.isEmpty ||
         (_passwordMethod == 0 && _prefixController.text.isEmpty) ||
-        (_passwordMethod == 1 && _wordPasswordController.text.isEmpty)) {
+        (_passwordMethod == 1 && _currentPassword.isEmpty)) {
       _showSnackBar('Please fill in all required fields', Icons.error, isError: true);
       return;
     }
-
     final Account newAccount = Account(
       email: _emailController.text,
       username: _usernameController.text,
@@ -263,13 +213,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _clearFields();
     _showSnackBar('Account saved successfully', Icons.check_circle);
   }
-
   void _clearFields() {
     _emailController.clear();
     _usernameController.clear();
     _auth_codeController.clear();
+    _passwordController.clear();
   }
-
   void _showSnackBar(String message, IconData icon, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -287,7 +236,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
     );
   }
-
   Future<void> _downloadJson() async {
     final PermissionStatus status = await Permission.manageExternalStorage.request();
     if (status.isGranted) {
@@ -309,7 +257,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       _showSnackBar('Storage permission denied', Icons.error, isError: true);
     }
   }
-
   void _importJson() {
     try {
       final List<dynamic> imported = jsonDecode(_importController.text);
@@ -324,36 +271,30 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       _showSnackBar('Invalid JSON format', Icons.error, isError: true);
     }
   }
-
   void _editAccount(int index) {
     setState(() {
       _editingIndex = index;
       _emailController.text = _accounts[index].email;
       _usernameController.text = _accounts[index].username;
       _auth_codeController.text = _accounts[index].auth_code;
-      
+     
       // Detect password method and set appropriate controller
       final String password = _accounts[index].password;
       if (password.contains('@')) {
-        _prefixController.text = password.split('@').first;
         _passwordMethod = 0;
+        _prefixController.text = password.split('@').first;
       } else {
-        // Extract the word part (remove the day numbers at the end)
-        final String wordPart = password.replaceAll(RegExp(r'\d+$'), '');
-        _wordPasswordController.text = wordPart.toLowerCase();
         _passwordMethod = 1;
+        _passwordController.text = password;
       }
       _prefs.setInt('password_method', _passwordMethod);
-      _generateWordPassword();
     });
     _tabController.animateTo(0);
   }
-
   void _copyAccountPassword(int index) {
     Clipboard.setData(ClipboardData(text: _accounts[index].password));
     _showSnackBar('Password copied', Icons.content_copy);
   }
-
   void _deleteAccount(int index) {
     showDialog(
       context: context,
@@ -386,10 +327,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       },
     );
   }
-
   void _clearAll() {
     if (_accounts.isEmpty) return;
-    
+   
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -421,7 +361,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       },
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -490,7 +429,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     ),
                   ),
                 if (_editingIndex != null) const SizedBox(height: 12),
-                
+               
                 if (_showEmailInput) ...[
                   _buildInputField(_emailController, 'Email Address (Optional)', Icons.email),
                   const SizedBox(height: 12),
@@ -530,7 +469,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ],
             ),
           ),
-          
+         
           // Tab 2: Import/Export
           SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -551,7 +490,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           ],
                         ),
                         const SizedBox(height: 8),
-                        const Text('Download all your saved accounts as a JSON file.', 
+                        const Text('Download all your saved accounts as a JSON file.',
                           style: TextStyle(color: Colors.grey, fontSize: 14)),
                         const SizedBox(height: 12),
                         ElevatedButton.icon(
@@ -582,7 +521,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           ],
                         ),
                         const SizedBox(height: 8),
-                        const Text('Paste JSON data to import accounts.', 
+                        const Text('Paste JSON data to import accounts.',
                           style: TextStyle(color: Colors.grey, fontSize: 14)),
                         const SizedBox(height: 12),
                         TextField(
@@ -612,7 +551,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ],
             ),
           ),
-          
+         
           // Tab 3: Saved
           Column(
             children: [
@@ -628,7 +567,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text('${_accounts.length} accounts saved', 
+                        child: Text('${_accounts.length} accounts saved',
                           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                       ),
                       ElevatedButton.icon(
@@ -652,10 +591,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           children: [
                             Icon(Icons.inbox, size: 56, color: Colors.grey.shade400),
                             const SizedBox(height: 12),
-                            Text('No accounts saved yet', 
+                            Text('No accounts saved yet',
                               style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
                             const SizedBox(height: 6),
-                            Text('Add your first account in the Input tab', 
+                            Text('Add your first account in the Input tab',
                               style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
                           ],
                         ),
@@ -757,7 +696,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ),
             ],
           ),
-
           // Tab 4: Settings
           SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -788,7 +726,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                     color: Colors.grey.shade700,
                                     fontSize: 14,
                                   )),
-                                  Text('Toggle email field visibility in input form', 
+                                  Text('Toggle email field visibility in input form',
                                     style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
                                 ],
                               ),
@@ -865,10 +803,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           ],
                         ),
                         const SizedBox(height: 8),
-                        Text('Insta Saver v1.0', 
+                        Text('Insta Saver v1.0',
                           style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
                         const SizedBox(height: 2),
-                        Text('Secure Instagram account manager', 
+                        Text('Secure Instagram account manager',
                           style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
                       ],
                     ),
@@ -881,7 +819,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
     );
   }
-
   List<Widget> _buildPrefixMethodSettings() {
     return [
       TextField(
@@ -906,7 +843,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Current Password Format:', 
+            Text('Current Password Format:',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: Colors.grey.shade700,
@@ -923,34 +860,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
     ];
   }
-
   List<Widget> _buildWordMethodSettings() {
     return [
-      TextField(
-        controller: _wordPasswordController,
-        decoration: InputDecoration(
-          labelText: 'Base Word',
-          hintText: 'Enter a word for password generation',
-          prefixIcon: Icon(Icons.text_fields, color: Theme.of(context).colorScheme.primary),
-          suffixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: _generateWordPassword,
-                tooltip: 'Regenerate',
-              ),
-              IconButton(
-                icon: const Icon(Icons.content_copy),
-                onPressed: _copyPassword,
-                tooltip: 'Copy Password',
-              ),
-            ],
-          ),
-        ),
-        onChanged: (value) => _generateWordPassword(),
-      ),
-      const SizedBox(height: 12),
       Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -960,33 +871,23 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Generated Password:', 
+            Text('Current Date: ${DateTime.now().day.toString().padLeft(2, '0')}',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: Colors.grey.shade700,
                 fontSize: 13,
               )),
             const SizedBox(height: 4),
-            Text(_currentWordPassword.isEmpty ? 'Enter a word to generate password' : _currentWordPassword,
-              style: TextStyle(
-                fontSize: 14, 
-                fontWeight: FontWeight.bold,
-                color: _currentWordPassword.isEmpty ? Colors.grey : Colors.black,
-              )),
-            const SizedBox(height: 6),
-            Text('Format: (Mixed case word) + (today\'s date) • Length: 8-12 characters',
+            Text('Generated passwords will be random mixed case letters (8-13 chars) appended with today\'s date (2 digits).',
               style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
-            if (_currentWordPassword.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text('Example: "hello" + "${DateTime.now().day.toString().padLeft(2, '0')}" = "HeLlO${DateTime.now().day.toString().padLeft(2, '0')}"',
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
-            ],
+            const SizedBox(height: 6),
+            Text('Total length: 10-15 characters. You can generate and edit in the Input tab.',
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
           ],
         ),
       ),
     ];
   }
-
   Widget _buildInputField(TextEditingController controller, String label, IconData icon) {
     return TextField(
       controller: controller,
@@ -996,59 +897,87 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
     );
   }
-
   Widget _buildPasswordField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Password', style: TextStyle(
-          color: Colors.grey.shade700,
-          fontSize: 14,
-        )),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Text(
-                  _currentPassword.isEmpty ? 'Configure password in Settings' : _currentPassword,
-                  style: TextStyle(
-                    fontSize: 14, 
-                    fontWeight: FontWeight.w500,
-                    color: _currentPassword.isEmpty ? Colors.grey : Colors.black,
+    final theme = Theme.of(context);
+    if (_passwordMethod == 0) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Password', style: TextStyle(color: Colors.grey.shade700, fontSize: 14,)),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Text(
+                    _currentPassword.isEmpty ? 'Configure password in Settings' : _currentPassword,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: _currentPassword.isEmpty ? Colors.grey : Colors.black,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: _copyPassword,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.all(12),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: _copyPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.secondary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.all(12),
+                ),
+                child: const Icon(Icons.content_copy, size: 18),
               ),
-              child: const Icon(Icons.content_copy, size: 18),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        if (_passwordMethod == 0)
+            ],
+          ),
+          const SizedBox(height: 4),
           Text('Format: (prefix)@(today\'s date) • Today is ${DateTime.now().day.toString().padLeft(2, '0')}',
             style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
-        if (_passwordMethod == 1)
-          Text('Format: (Mixed case word) + (date) • Length: 8-12 characters',
+        ],
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Password', style: TextStyle(color: Colors.grey.shade700, fontSize: 14,)),
+          const SizedBox(height: 6),
+          TextField(
+            controller: _passwordController,
+            decoration: InputDecoration(
+              hintText: 'Generate or enter password',
+              prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary),
+              suffixIcon: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.refresh),
+                      onPressed: _generateRandomPassword,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.content_copy),
+                      onPressed: _copyPassword,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text('Format: Random mixed case letters + date • 10-15 chars',
             style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
-      ],
-    );
+        ],
+      );
+    }
   }
-
   @override
   void dispose() {
     _tabController.dispose();
@@ -1057,7 +986,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _auth_codeController.dispose();
     _importController.dispose();
     _prefixController.dispose();
-    _wordPasswordController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 }
