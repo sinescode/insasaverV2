@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
           error: Color(0xFFEF4444),
           tertiary: Color(0xFFF56040),
         ),
-        cardTheme: CardThemeData(
+        cardTheme: CardTheme(
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -135,7 +135,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   final TextEditingController _auth_codeController = TextEditingController();
   final TextEditingController _importController = TextEditingController();
   final TextEditingController _prefixController = TextEditingController();
+  final TextEditingController _wordPasswordController = TextEditingController();
   late SharedPreferences _prefs;
+  
+  bool _showEmailInput = true;
+  int _passwordMethod = 0; // 0 for prefix method, 1 for word method
+  String _currentWordPassword = '';
 
   @override
   void initState() {
@@ -153,15 +158,25 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         _accounts = decoded.map((item) => Account.fromJson(item)).toList();
       });
     }
+    
     _emailController.text = _prefs.getString('email') ?? '';
     _usernameController.text = _prefs.getString('username') ?? '';
     _auth_codeController.text = _prefs.getString('auth_code') ?? '';
     _prefixController.text = _prefs.getString('prefix') ?? '';
+    _wordPasswordController.text = _prefs.getString('word_password') ?? '';
+    _showEmailInput = _prefs.getBool('show_email_input') ?? true;
+    _passwordMethod = _prefs.getInt('password_method') ?? 0;
 
     _emailController.addListener(() => _prefs.setString('email', _emailController.text));
     _usernameController.addListener(() => _prefs.setString('username', _usernameController.text));
     _auth_codeController.addListener(() => _prefs.setString('auth_code', _auth_codeController.text));
     _prefixController.addListener(() => _prefs.setString('prefix', _prefixController.text));
+    _wordPasswordController.addListener(() {
+      _prefs.setString('word_password', _wordPasswordController.text);
+      _generateWordPassword();
+    });
+
+    _generateWordPassword();
   }
 
   Future<void> _saveAccounts() async {
@@ -170,9 +185,51 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   String get _currentPassword {
-    final String prefix = _prefixController.text.trim();
-    final String day = DateTime.now().day.toString();
-    return prefix.isNotEmpty ? '$prefix@$day' : '@$day';
+    if (_passwordMethod == 1) {
+      return _currentWordPassword;
+    } else {
+      final String prefix = _prefixController.text.trim();
+      final String day = DateTime.now().day.toString().padLeft(2, '0');
+      return prefix.isNotEmpty ? '$prefix@$day' : '@$day';
+    }
+  }
+
+  void _generateWordPassword() {
+    final String word = _wordPasswordController.text.trim();
+    if (word.isEmpty) {
+      setState(() {
+        _currentWordPassword = '';
+      });
+      return;
+    }
+
+    // Create mixed case: first char uppercase, then alternate
+    String mixedCaseWord = '';
+    for (int i = 0; i < word.length; i++) {
+      if (i == 0) {
+        mixedCaseWord += word[i].toUpperCase();
+      } else if (i % 2 == 0) {
+        mixedCaseWord += word[i].toUpperCase();
+      } else {
+        mixedCaseWord += word[i].toLowerCase();
+      }
+    }
+
+    // Ensure total length between 8-12 characters
+    final String day = DateTime.now().day.toString().padLeft(2, '0');
+    String basePassword = mixedCaseWord + day;
+    
+    if (basePassword.length < 8) {
+      // Add padding if too short
+      basePassword = basePassword.padRight(8, 'X');
+    } else if (basePassword.length > 12) {
+      // Truncate if too long
+      basePassword = basePassword.substring(0, 12);
+    }
+
+    setState(() {
+      _currentWordPassword = basePassword;
+    });
   }
 
   void _copyPassword() {
@@ -181,7 +238,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   void _submit() {
-    if (_emailController.text.isEmpty || _usernameController.text.isEmpty || _prefixController.text.isEmpty) {
+    if (_usernameController.text.isEmpty || 
+        (_passwordMethod == 0 && _prefixController.text.isEmpty) ||
+        (_passwordMethod == 1 && _wordPasswordController.text.isEmpty)) {
       _showSnackBar('Please fill in all required fields', Icons.error, isError: true);
       return;
     }
@@ -272,7 +331,20 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       _emailController.text = _accounts[index].email;
       _usernameController.text = _accounts[index].username;
       _auth_codeController.text = _accounts[index].auth_code;
-      _prefixController.text = _accounts[index].password.split('@').first;
+      
+      // Detect password method and set appropriate controller
+      final String password = _accounts[index].password;
+      if (password.contains('@')) {
+        _prefixController.text = password.split('@').first;
+        _passwordMethod = 0;
+      } else {
+        // Extract the word part (remove the day numbers at the end)
+        final String wordPart = password.replaceAll(RegExp(r'\d+$'), '');
+        _wordPasswordController.text = wordPart.toLowerCase();
+        _passwordMethod = 1;
+      }
+      _prefs.setInt('password_method', _passwordMethod);
+      _generateWordPassword();
     });
     _tabController.animateTo(0);
   }
@@ -393,13 +465,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         children: [
           // Tab 1: Input
           SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (_editingIndex != null)
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.tertiary!.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -407,48 +479,51 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.edit, color: Theme.of(context).colorScheme.tertiary),
+                        Icon(Icons.edit, color: Theme.of(context).colorScheme.tertiary, size: 18),
                         const SizedBox(width: 8),
                         Text('Editing Account', style: TextStyle(
                           color: Theme.of(context).colorScheme.tertiary,
                           fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         )),
                       ],
                     ),
                   ),
-                if (_editingIndex != null) const SizedBox(height: 16),
+                if (_editingIndex != null) const SizedBox(height: 12),
                 
-                _buildInputField(_emailController, 'Email Address', Icons.email),
-                const SizedBox(height: 16),
+                if (_showEmailInput) ...[
+                  _buildInputField(_emailController, 'Email Address (Optional)', Icons.email),
+                  const SizedBox(height: 12),
+                ],
                 _buildInputField(_usernameController, 'Username', Icons.person),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 _buildPasswordField(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 _buildInputField(_auth_codeController, '2FA Code (Optional)', Icons.security),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: _submit,
-                        icon: Icon(_editingIndex != null ? Icons.update : Icons.save),
+                        icon: Icon(_editingIndex != null ? Icons.update : Icons.save, size: 20),
                         label: Text(_editingIndex != null ? 'Update' : 'Save Account'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.primary,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: _clearFields,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey.shade100,
                         foregroundColor: Colors.grey.shade700,
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(14),
                       ),
-                      child: const Icon(Icons.clear),
+                      child: const Icon(Icons.clear, size: 20),
                     ),
                   ],
                 ),
@@ -458,30 +533,30 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           
           // Tab 2: Import/Export
           SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.download, color: Theme.of(context).colorScheme.secondary),
+                            Icon(Icons.download, color: Theme.of(context).colorScheme.secondary, size: 20),
                             const SizedBox(width: 8),
-                            const Text('Export Data', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const Text('Export Data', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         const Text('Download all your saved accounts as a JSON file.', 
-                          style: TextStyle(color: Colors.grey)),
-                        const SizedBox(height: 16),
+                          style: TextStyle(color: Colors.grey, fontSize: 14)),
+                        const SizedBox(height: 12),
                         ElevatedButton.icon(
                           onPressed: _downloadJson,
-                          icon: const Icon(Icons.file_download),
+                          icon: const Icon(Icons.file_download, size: 18),
                           label: const Text('Download JSON'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -492,24 +567,24 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.upload, color: Theme.of(context).colorScheme.primary),
+                            Icon(Icons.upload, color: Theme.of(context).colorScheme.primary, size: 20),
                             const SizedBox(width: 8),
-                            const Text('Import Data', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const Text('Import Data', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         const Text('Paste JSON data to import accounts.', 
-                          style: TextStyle(color: Colors.grey)),
-                        const SizedBox(height: 16),
+                          style: TextStyle(color: Colors.grey, fontSize: 14)),
+                        const SizedBox(height: 12),
                         TextField(
                           controller: _importController,
                           decoration: const InputDecoration(
@@ -517,13 +592,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             hintText: 'Paste your exported JSON data...',
                             alignLabelWithHint: true,
                           ),
-                          maxLines: 8,
-                          minLines: 8,
+                          maxLines: 6,
+                          minLines: 6,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         ElevatedButton.icon(
                           onPressed: _importJson,
-                          icon: const Icon(Icons.file_upload),
+                          icon: const Icon(Icons.file_upload, size: 18),
                           label: const Text('Import JSON'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).colorScheme.primary,
@@ -543,7 +618,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             children: [
               if (_accounts.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border(
@@ -554,16 +629,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     children: [
                       Expanded(
                         child: Text('${_accounts.length} accounts saved', 
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                       ),
                       ElevatedButton.icon(
                         onPressed: _clearAll,
-                        icon: const Icon(Icons.clear_all, size: 18),
+                        icon: const Icon(Icons.clear_all, size: 16),
                         label: const Text('Clear All'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.error,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         ),
                       ),
                     ],
@@ -575,96 +650,98 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.inbox, size: 64, color: Colors.grey.shade400),
-                            const SizedBox(height: 16),
+                            Icon(Icons.inbox, size: 56, color: Colors.grey.shade400),
+                            const SizedBox(height: 12),
                             Text('No accounts saved yet', 
-                              style: TextStyle(fontSize: 18, color: Colors.grey.shade600)),
-                            const SizedBox(height: 8),
+                              style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
+                            const SizedBox(height: 6),
                             Text('Add your first account in the Input tab', 
-                              style: TextStyle(color: Colors.grey.shade500)),
+                              style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
                           ],
                         ),
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(12),
                         itemCount: _accounts.length,
                         itemBuilder: (context, i) {
                           final int accountIndex = _accounts.length - 1 - i;
                           final Account acc = _accounts[accountIndex];
                           return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
+                            margin: const EdgeInsets.only(bottom: 8),
                             child: Padding(
-                              padding: const EdgeInsets.all(16.0),
+                              padding: const EdgeInsets.all(12.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     children: [
                                       CircleAvatar(
+                                        radius: 16,
                                         backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                        child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+                                        child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary, size: 16),
                                       ),
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: 8),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text(acc.email, style: const TextStyle(
-                                              fontSize: 16, fontWeight: FontWeight.bold)),
+                                            if (acc.email.isNotEmpty)
+                                              Text(acc.email, style: const TextStyle(
+                                                fontSize: 14, fontWeight: FontWeight.bold)),
                                             Text(acc.username, style: TextStyle(
-                                              color: Colors.grey.shade600)),
+                                              color: Colors.grey.shade600, fontSize: 13)),
                                           ],
                                         ),
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 8),
                                   Container(
-                                    padding: const EdgeInsets.all(12),
+                                    padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
                                       color: Colors.grey.shade50,
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Column(
                                       children: [
                                         Row(
                                           children: [
-                                            const Icon(Icons.lock, size: 16),
-                                            const SizedBox(width: 8),
-                                            Expanded(child: Text('Password: ${acc.password}')),
+                                            const Icon(Icons.lock, size: 14),
+                                            const SizedBox(width: 6),
+                                            Expanded(child: Text('Password: ${acc.password}', style: const TextStyle(fontSize: 13))),
                                           ],
                                         ),
                                         if (acc.auth_code.isNotEmpty) ...[
-                                          const SizedBox(height: 8),
+                                          const SizedBox(height: 6),
                                           Row(
                                             children: [
-                                              const Icon(Icons.security, size: 16),
-                                              const SizedBox(width: 8),
-                                              Expanded(child: Text('2FA: ${acc.auth_code}')),
+                                              const Icon(Icons.security, size: 14),
+                                              const SizedBox(width: 6),
+                                              Expanded(child: Text('2FA: ${acc.auth_code}', style: const TextStyle(fontSize: 13))),
                                             ],
                                           ),
                                         ],
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 8),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       TextButton.icon(
                                         onPressed: () => _editAccount(accountIndex),
-                                        icon: const Icon(Icons.edit, size: 16),
-                                        label: const Text('Edit'),
+                                        icon: const Icon(Icons.edit, size: 14),
+                                        label: const Text('Edit', style: TextStyle(fontSize: 12)),
                                       ),
                                       TextButton.icon(
                                         onPressed: () => _copyAccountPassword(accountIndex),
-                                        icon: const Icon(Icons.content_copy, size: 16),
-                                        label: const Text('Copy'),
+                                        icon: const Icon(Icons.content_copy, size: 14),
+                                        label: const Text('Copy', style: TextStyle(fontSize: 12)),
                                       ),
                                       TextButton.icon(
                                         onPressed: () => _deleteAccount(accountIndex),
-                                        icon: const Icon(Icons.delete, size: 16),
-                                        label: const Text('Delete'),
+                                        icon: const Icon(Icons.delete, size: 14),
+                                        label: const Text('Delete', style: TextStyle(fontSize: 12)),
                                         style: TextButton.styleFrom(
                                           foregroundColor: Theme.of(context).colorScheme.error,
                                         ),
@@ -683,82 +760,114 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
           // Tab 4: Settings
           SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.password, color: Theme.of(context).colorScheme.primary),
+                            Icon(Icons.email, color: Theme.of(context).colorScheme.primary, size: 20),
                             const SizedBox(width: 8),
-                            const Text('Password Settings', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const Text('Email Settings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: _prefixController,
-                          decoration: InputDecoration(
-                            labelText: 'Password Prefix',
-                            hintText: 'Enter your password prefix',
-                            prefixIcon: Icon(Icons.text_fields, color: Theme.of(context).colorScheme.primary),
-                            suffixIcon: IconButton(
-                              icon: const Icon(Icons.content_copy),
-                              onPressed: _copyPassword,
-                            ),
-                          ),
-                        ),
                         const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Current Password Format:', 
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey.shade700,
-                                )),
-                              const SizedBox(height: 4),
-                              Text('${_prefixController.text.isNotEmpty ? _prefixController.text : '(prefix)'}@${DateTime.now().day}',
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 8),
-                              Text('Example: If prefix is "Yaseen" and today is ${DateTime.now().day}, password will be: Yaseen@${DateTime.now().day}',
-                                style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
-                            ],
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Show Email Input', style: TextStyle(
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                  )),
+                                  Text('Toggle email field visibility in input form', 
+                                    style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+                                ],
+                              ),
+                            ),
+                            Switch(
+                              value: _showEmailInput,
+                              onChanged: (value) {
+                                setState(() {
+                                  _showEmailInput = value;
+                                });
+                                _prefs.setBool('show_email_input', value);
+                              },
+                              activeColor: Theme.of(context).colorScheme.primary,
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.info, color: Theme.of(context).colorScheme.secondary),
+                            Icon(Icons.password, color: Theme.of(context).colorScheme.primary, size: 20),
                             const SizedBox(width: 8),
-                            const Text('About', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const Text('Password Method', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           ],
                         ),
                         const SizedBox(height: 12),
+                        SegmentedButton<int>(
+                          segments: const [
+                            ButtonSegment<int>(
+                              value: 0,
+                              label: Text('Prefix Method'),
+                            ),
+                            ButtonSegment<int>(
+                              value: 1,
+                              label: Text('Word Method'),
+                            ),
+                          ],
+                          selected: {_passwordMethod},
+                          onSelectionChanged: (Set<int> newSelection) {
+                            setState(() {
+                              _passwordMethod = newSelection.first;
+                            });
+                            _prefs.setInt('password_method', _passwordMethod);
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        if (_passwordMethod == 0) ..._buildPrefixMethodSettings(),
+                        if (_passwordMethod == 1) ..._buildWordMethodSettings(),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.info, color: Theme.of(context).colorScheme.secondary, size: 20),
+                            const SizedBox(width: 8),
+                            const Text('About', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
                         Text('Insta Saver v1.0', 
-                          style: TextStyle(color: Colors.grey.shade600)),
-                        const SizedBox(height: 4),
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
+                        const SizedBox(height: 2),
                         Text('Secure Instagram account manager', 
                           style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
                       ],
@@ -771,6 +880,111 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         ],
       ),
     );
+  }
+
+  List<Widget> _buildPrefixMethodSettings() {
+    return [
+      TextField(
+        controller: _prefixController,
+        decoration: InputDecoration(
+          labelText: 'Password Prefix',
+          hintText: 'Enter your password prefix',
+          prefixIcon: Icon(Icons.text_fields, color: Theme.of(context).colorScheme.primary),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.content_copy),
+            onPressed: _copyPassword,
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Current Password Format:', 
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.grey.shade700,
+                fontSize: 13,
+              )),
+            const SizedBox(height: 4),
+            Text('${_prefixController.text.isNotEmpty ? _prefixController.text : '(prefix)'}@${DateTime.now().day.toString().padLeft(2, '0')}',
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Text('Example: If prefix is "Yaseen" and today is ${DateTime.now().day}, password will be: Yaseen@${DateTime.now().day.toString().padLeft(2, '0')}',
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+          ],
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _buildWordMethodSettings() {
+    return [
+      TextField(
+        controller: _wordPasswordController,
+        decoration: InputDecoration(
+          labelText: 'Base Word',
+          hintText: 'Enter a word for password generation',
+          prefixIcon: Icon(Icons.text_fields, color: Theme.of(context).colorScheme.primary),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: _generateWordPassword,
+                tooltip: 'Regenerate',
+              ),
+              IconButton(
+                icon: const Icon(Icons.content_copy),
+                onPressed: _copyPassword,
+                tooltip: 'Copy Password',
+              ),
+            ],
+          ),
+        ),
+        onChanged: (value) => _generateWordPassword(),
+      ),
+      const SizedBox(height: 12),
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Generated Password:', 
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.grey.shade700,
+                fontSize: 13,
+              )),
+            const SizedBox(height: 4),
+            Text(_currentWordPassword.isEmpty ? 'Enter a word to generate password' : _currentWordPassword,
+              style: TextStyle(
+                fontSize: 14, 
+                fontWeight: FontWeight.bold,
+                color: _currentWordPassword.isEmpty ? Colors.grey : Colors.black,
+              )),
+            const SizedBox(height: 6),
+            Text('Format: (Mixed case word) + (today\'s date) • Length: 8-12 characters',
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+            if (_currentWordPassword.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text('Example: "hello" + "${DateTime.now().day.toString().padLeft(2, '0')}" = "HeLlO${DateTime.now().day.toString().padLeft(2, '0')}"',
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+            ],
+          ],
+        ),
+      ),
+    ];
   }
 
   Widget _buildInputField(TextEditingController controller, String label, IconData icon) {
@@ -789,22 +1003,26 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       children: [
         Text('Password', style: TextStyle(
           color: Colors.grey.shade700,
-          fontSize: 16,
+          fontSize: 14,
         )),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Row(
           children: [
             Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade50,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.grey.shade300),
                 ),
                 child: Text(
-                  _currentPassword,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  _currentPassword.isEmpty ? 'Configure password in Settings' : _currentPassword,
+                  style: TextStyle(
+                    fontSize: 14, 
+                    fontWeight: FontWeight.w500,
+                    color: _currentPassword.isEmpty ? Colors.grey : Colors.black,
+                  ),
                 ),
               ),
             ),
@@ -814,15 +1032,19 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
               ),
-              child: const Icon(Icons.content_copy),
+              child: const Icon(Icons.content_copy, size: 18),
             ),
           ],
         ),
         const SizedBox(height: 4),
-        Text('Format: (prefix)@(today\'s date) • Today is ${DateTime.now().day}',
-          style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+        if (_passwordMethod == 0)
+          Text('Format: (prefix)@(today\'s date) • Today is ${DateTime.now().day.toString().padLeft(2, '0')}',
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
+        if (_passwordMethod == 1)
+          Text('Format: (Mixed case word) + (date) • Length: 8-12 characters',
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
       ],
     );
   }
@@ -835,6 +1057,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _auth_codeController.dispose();
     _importController.dispose();
     _prefixController.dispose();
+    _wordPasswordController.dispose();
     super.dispose();
   }
 }
