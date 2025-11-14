@@ -151,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _usernameController.text = _prefs.getString('username') ?? '';
     _auth_codeController.text = _prefs.getString('auth_code') ?? '';
     _prefixController.text = _prefs.getString('prefix') ?? '';
+    _passwordController.text = _prefs.getString('random_password') ?? '';
     _showEmailInput = _prefs.getBool('show_email_input') ?? true;
     _passwordMethod = _prefs.getInt('password_method') ?? 0;
     if (_passwordMethod == 1 && _passwordController.text.isEmpty) {
@@ -160,6 +161,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _usernameController.addListener(() => _prefs.setString('username', _usernameController.text));
     _auth_codeController.addListener(() => _prefs.setString('auth_code', _auth_codeController.text));
     _prefixController.addListener(() => _prefs.setString('prefix', _prefixController.text));
+    _passwordController.addListener(() => _prefs.setString('random_password', _passwordController.text));
   }
   Future<void> _saveAccounts() async {
     final String accountsJson = jsonEncode(_accounts.map((acc) => acc.toJson()).toList());
