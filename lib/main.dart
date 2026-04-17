@@ -18,32 +18,32 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Insta Saver',
+      title: 'Account Manager',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFFE1306C),
-          secondary: Color(0xFF405DE6),
-          surface: Color(0xFF1A1A2E),
-          onSurface: Color(0xFFE0E0E0),
-          background: Color(0xFF0F0F1A),
-          onBackground: Color(0xFFE0E0E0),
-          onPrimary: Colors.white,
-          onSecondary: Colors.white,
+          primary: Color(0xFFDFD0B8),
+          secondary: Color(0xFF948979),
+          surface: Color(0xFF2C3139),
+          onSurface: Color(0xFFDFD0B8),
+          background: Color(0xFF222831),
+          onBackground: Color(0xFFDFD0B8),
+          onPrimary: Color(0xFF222831),
+          onSecondary: Color(0xFF222831),
           error: Color(0xFFEF4444),
-          tertiary: Color(0xFFF56040),
-          surfaceContainerHighest: Color(0xFF252540),
-          outline: Color(0xFF3A3A5C),
-          onSurfaceVariant: Color(0xFF9E9EB8),
+          tertiary: Color(0xFF948979),
+          surfaceContainerHighest: Color(0xFF393E46),
+          outline: Color(0xFF4A5060),
+          onSurfaceVariant: Color(0xFF948979),
         ),
         cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          color: const Color(0xFF1E1E36),
+          color: const Color(0xFF2C3139),
           surfaceTintColor: Colors.transparent,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -65,33 +65,33 @@ class MyApp extends StatelessWidget {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: const Color(0xFF252540),
+          fillColor: const Color(0xFF393E46),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF3A3A5C)),
+            borderSide: const BorderSide(color: Color(0xFF4A5060)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF3A3A5C)),
+            borderSide: const BorderSide(color: Color(0xFF4A5060)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFFE1306C), width: 2),
+            borderSide: const BorderSide(color: Color(0xFFDFD0B8), width: 2),
           ),
-          labelStyle: const TextStyle(color: Color(0xFF9E9EB8)),
-          hintStyle: const TextStyle(color: Color(0xFF6B6B8D)),
+          labelStyle: const TextStyle(color: Color(0xFF948979)),
+          hintStyle: const TextStyle(color: Color(0xFF948979)),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
         appBarTheme: const AppBarTheme(
           elevation: 0,
-          backgroundColor: Color(0xFF0F0F1A),
-          foregroundColor: Color(0xFFE0E0E0),
+          backgroundColor: Color(0xFF222831),
+          foregroundColor: Color(0xFFDFD0B8),
           surfaceTintColor: Colors.transparent,
         ),
-        scaffoldBackgroundColor: const Color(0xFF0F0F1A),
+        scaffoldBackgroundColor: const Color(0xFF222831),
         dialogTheme: DialogThemeData(
-          backgroundColor: const Color(0xFF1E1E36),
+          backgroundColor: const Color(0xFF2C3139),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         snackBarTheme: SnackBarThemeData(
@@ -99,38 +99,38 @@ class MyApp extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         dividerTheme: const DividerThemeData(
-          color: Color(0xFF2A2A44),
+          color: Color(0xFF393E46),
         ),
         switchTheme: SwitchThemeData(
           thumbColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFFE1306C);
+              return const Color(0xFFDFD0B8);
             }
-            return const Color(0xFF6B6B8D);
+            return const Color(0xFF948979);
           }),
           trackColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFFE1306C).withOpacity(0.4);
+              return const Color(0xFFDFD0B8).withOpacity(0.4);
             }
-            return const Color(0xFF3A3A5C);
+            return const Color(0xFF393E46);
           }),
         ),
         segmentedButtonTheme: SegmentedButtonThemeData(
           style: ButtonStyle(
             backgroundColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
-                return const Color(0xFFE1306C);
+                return const Color(0xFFDFD0B8);
               }
-              return const Color(0xFF252540);
+              return const Color(0xFF393E46);
             }),
             foregroundColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
-                return Colors.white;
+                return const Color(0xFF222831);
               }
-              return const Color(0xFF9E9EB8);
+              return const Color(0xFF948979);
             }),
             side: WidgetStateProperty.all(
-              const BorderSide(color: Color(0xFF3A3A5C)),
+              const BorderSide(color: Color(0xFF4A5060)),
             ),
             shape: WidgetStateProperty.all(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -270,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage>
     _passwordController.text = randomPart + day;
   }
 
-  void _copyPassword() {
+  void _copyCurrentPassword() {
     Clipboard.setData(ClipboardData(text: _currentPassword));
     _showSnackBar('Password copied to clipboard', Icons.content_copy);
   }
@@ -327,7 +327,7 @@ class _MyHomePageState extends State<MyHomePage>
           ],
         ),
         backgroundColor:
-            isError ? const Color(0xFFEF4444) : const Color(0xFFE1306C),
+            isError ? const Color(0xFFEF4444) : const Color(0xFF393E46),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
@@ -399,13 +399,14 @@ class _MyHomePageState extends State<MyHomePage>
     _tabController.animateTo(0);
   }
 
-  // FIXED: No delay, copies both password and username immediately
-  void _copyAccountCredentials(int index) {
-    final acc = _accounts[index];
-    // Copy password, then username — both land in clipboard history
-    Clipboard.setData(ClipboardData(text: acc.password));
-    Clipboard.setData(ClipboardData(text: acc.username));
-    _showSnackBar('Password & username copied', Icons.content_copy);
+  void _copyUsername(int index) {
+    Clipboard.setData(ClipboardData(text: _accounts[index].username));
+    _showSnackBar('Username copied', Icons.person);
+  }
+
+  void _copyPassword(int index) {
+    Clipboard.setData(ClipboardData(text: _accounts[index].password));
+    _showSnackBar('Password copied', Icons.lock);
   }
 
   void _deleteAccount(int index) {
@@ -413,17 +414,17 @@ class _MyHomePageState extends State<MyHomePage>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E36),
+          backgroundColor: const Color(0xFF2C3139),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: const Text('Delete Account',
-              style: TextStyle(color: Color(0xFFE0E0E0))),
+              style: TextStyle(color: Color(0xFFDFD0B8))),
           content: const Text('Are you sure you want to delete this account?',
-              style: TextStyle(color: Color(0xFF9E9EB8))),
+              style: TextStyle(color: Color(0xFF948979))),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancel',
-                  style: TextStyle(color: Color(0xFF9E9EB8))),
+                  style: TextStyle(color: Color(0xFF948979))),
             ),
             ElevatedButton(
               onPressed: () {
@@ -452,18 +453,18 @@ class _MyHomePageState extends State<MyHomePage>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E36),
+          backgroundColor: const Color(0xFF2C3139),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: const Text('Clear All Accounts',
-              style: TextStyle(color: Color(0xFFE0E0E0))),
+              style: TextStyle(color: Color(0xFFDFD0B8))),
           content: Text(
               'Are you sure you want to delete all ${_accounts.length} accounts?',
-              style: const TextStyle(color: Color(0xFF9E9EB8))),
+              style: const TextStyle(color: Color(0xFF948979))),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancel',
-                  style: TextStyle(color: Color(0xFF9E9EB8))),
+                  style: TextStyle(color: Color(0xFF948979))),
             ),
             ElevatedButton(
               onPressed: () {
@@ -497,25 +498,25 @@ class _MyHomePageState extends State<MyHomePage>
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [
-                    Color(0xFFE1306C),
-                    Color(0xFFF56040),
+                    Color(0xFFDFD0B8),
+                    Color(0xFF948979),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
               child:
-                  const Icon(Icons.camera_alt, color: Colors.white, size: 24),
+                  const Icon(Icons.manage_accounts, color: Color(0xFF222831), size: 24),
             ),
             const SizedBox(width: 12),
-            const Text('Insta Saver',
+            const Text('Account Manager',
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: const Color(0xFFE1306C),
-          labelColor: const Color(0xFFE1306C),
-          unselectedLabelColor: const Color(0xFF6B6B8D),
+          indicatorColor: const Color(0xFFDFD0B8),
+          labelColor: const Color(0xFFDFD0B8),
+          unselectedLabelColor: const Color(0xFF948979),
           indicatorWeight: 3,
           labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
           unselectedLabelStyle: const TextStyle(fontSize: 12),
@@ -549,18 +550,18 @@ class _MyHomePageState extends State<MyHomePage>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF56040).withOpacity(0.12),
+                color: const Color(0xFF948979).withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                    color: const Color(0xFFF56040).withOpacity(0.3)),
+                    color: const Color(0xFF948979).withOpacity(0.3)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.edit, color: Color(0xFFF56040), size: 18),
+                  const Icon(Icons.edit, color: Color(0xFF948979), size: 18),
                   const SizedBox(width: 8),
                   Text('Editing Account #${_editingIndex! + 1}',
                       style: const TextStyle(
-                        color: Color(0xFFF56040),
+                        color: Color(0xFF948979),
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       )),
@@ -571,7 +572,7 @@ class _MyHomePageState extends State<MyHomePage>
                       _clearFields();
                     },
                     child: const Text('Cancel',
-                        style: TextStyle(color: Color(0xFFF56040), fontSize: 12)),
+                        style: TextStyle(color: Color(0xFF948979), fontSize: 12)),
                   ),
                 ],
               ),
@@ -600,7 +601,7 @@ class _MyHomePageState extends State<MyHomePage>
                       size: 20),
                   label: Text(_editingIndex != null ? 'Update' : 'Save Account'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE1306C),
+                    backgroundColor: const Color(0xFFDFD0B8),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
@@ -610,8 +611,8 @@ class _MyHomePageState extends State<MyHomePage>
               ElevatedButton(
                 onPressed: _clearFields,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF252540),
-                  foregroundColor: const Color(0xFF9E9EB8),
+                  backgroundColor: const Color(0xFF393E46),
+                  foregroundColor: const Color(0xFF948979),
                   padding: const EdgeInsets.all(14),
                 ),
                 child: const Icon(Icons.clear, size: 20),
@@ -630,9 +631,9 @@ class _MyHomePageState extends State<MyHomePage>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: const BoxDecoration(
-              color: Color(0xFF1A1A2E),
+              color: Color(0xFF222831),
               border: Border(
-                bottom: BorderSide(color: Color(0xFF2A2A44)),
+                bottom: BorderSide(color: Color(0xFF4A5060)),
               ),
             ),
             child: Row(
@@ -642,7 +643,7 @@ class _MyHomePageState extends State<MyHomePage>
                       style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF9E9EB8))),
+                          color: Color(0xFF948979))),
                 ),
                 ElevatedButton.icon(
                   onPressed: _clearAll,
@@ -670,11 +671,11 @@ class _MyHomePageState extends State<MyHomePage>
                       const SizedBox(height: 16),
                       const Text('No accounts saved yet',
                           style: TextStyle(
-                              fontSize: 16, color: Color(0xFF6B6B8D))),
+                              fontSize: 16, color: Color(0xFF948979))),
                       const SizedBox(height: 6),
                       const Text('Add your first account in the Input tab',
                           style:
-                              TextStyle(color: Color(0xFF4A4A6A), fontSize: 12)),
+                              TextStyle(color: Color(0xFF948979), fontSize: 12)),
                     ],
                   ),
                 )
@@ -697,9 +698,9 @@ class _MyHomePageState extends State<MyHomePage>
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E36),
+        color: const Color(0xFF2C3139),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A2A44)),
+        border: Border.all(color: const Color(0xFF4A5060)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14.0),
@@ -713,7 +714,7 @@ class _MyHomePageState extends State<MyHomePage>
                   height: 32,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFFE1306C), Color(0xFFF56040)],
+                      colors: [Color(0xFFDFD0B8), Color(0xFF948979)],
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -721,7 +722,7 @@ class _MyHomePageState extends State<MyHomePage>
                   child: Text(
                     '$cardNumber',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFF222831),
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -737,10 +738,10 @@ class _MyHomePageState extends State<MyHomePage>
                             style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFFE0E0E0))),
+                                color: Color(0xFFDFD0B8))),
                       Text('@${acc.username}',
                           style: const TextStyle(
-                              color: Color(0xFF9E9EB8), fontSize: 13)),
+                              color: Color(0xFF948979), fontSize: 13)),
                     ],
                   ),
                 ),
@@ -750,7 +751,7 @@ class _MyHomePageState extends State<MyHomePage>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFF141428),
+                color: const Color(0xFF393E46),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -758,12 +759,12 @@ class _MyHomePageState extends State<MyHomePage>
                   Row(
                     children: [
                       const Icon(Icons.lock_outline,
-                          size: 14, color: Color(0xFF6B6B8D)),
+                          size: 14, color: Color(0xFF948979)),
                       const SizedBox(width: 6),
                       Expanded(
                           child: Text('Password: ${acc.password}',
                               style: const TextStyle(
-                                  fontSize: 13, color: Color(0xFF9E9EB8)))),
+                                  fontSize: 13, color: Color(0xFF948979)))),
                     ],
                   ),
                   if (acc.auth_code.isNotEmpty) ...[
@@ -771,12 +772,12 @@ class _MyHomePageState extends State<MyHomePage>
                     Row(
                       children: [
                         const Icon(Icons.security_outlined,
-                            size: 14, color: Color(0xFF6B6B8D)),
+                            size: 14, color: Color(0xFF948979)),
                         const SizedBox(width: 6),
                         Expanded(
                             child: Text('2FA: ${acc.auth_code}',
                                 style: const TextStyle(
-                                    fontSize: 13, color: Color(0xFF9E9EB8)))),
+                                    fontSize: 13, color: Color(0xFF948979)))),
                       ],
                     ),
                   ],
@@ -790,15 +791,22 @@ class _MyHomePageState extends State<MyHomePage>
                 _actionButton(
                   icon: Icons.edit_outlined,
                   label: 'Edit',
-                  color: const Color(0xFF405DE6),
+                  color: const Color(0xFF948979),
                   onTap: () => _editAccount(accountIndex),
                 ),
                 const SizedBox(width: 4),
                 _actionButton(
-                  icon: Icons.content_copy,
-                  label: 'Copy',
-                  color: const Color(0xFFE1306C),
-                  onTap: () => _copyAccountCredentials(accountIndex),
+                  icon: Icons.person,
+                  label: 'User',
+                  color: const Color(0xFFDFD0B8),
+                  onTap: () => _copyUsername(accountIndex),
+                ),
+                const SizedBox(width: 4),
+                _actionButton(
+                  icon: Icons.lock_outline,
+                  label: 'Pass',
+                  color: const Color(0xFFDFD0B8),
+                  onTap: () => _copyPassword(accountIndex),
                 ),
                 const SizedBox(width: 4),
                 _actionButton(
@@ -850,9 +858,9 @@ class _MyHomePageState extends State<MyHomePage>
         children: [
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF1E1E36),
+              color: const Color(0xFF2C3139),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF2A2A44)),
+              border: Border.all(color: const Color(0xFF4A5060)),
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -863,11 +871,11 @@ class _MyHomePageState extends State<MyHomePage>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF405DE6).withOpacity(0.15),
+                        color: const Color(0xFF948979).withOpacity(0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(Icons.download,
-                          color: Color(0xFF405DE6), size: 20),
+                          color: Color(0xFF948979), size: 20),
                     ),
                     const SizedBox(width: 10),
                     const Text('Export Data',
@@ -878,14 +886,14 @@ class _MyHomePageState extends State<MyHomePage>
                 const SizedBox(height: 8),
                 const Text(
                     'Download all your saved accounts as a JSON file.',
-                    style: TextStyle(color: Color(0xFF6B6B8D), fontSize: 14)),
+                    style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
                 const SizedBox(height: 14),
                 ElevatedButton.icon(
                   onPressed: _downloadJson,
                   icon: const Icon(Icons.file_download, size: 18),
                   label: const Text('Download JSON'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF405DE6),
+                    backgroundColor: const Color(0xFF948979),
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -895,9 +903,9 @@ class _MyHomePageState extends State<MyHomePage>
           const SizedBox(height: 16),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF1E1E36),
+              color: const Color(0xFF2C3139),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF2A2A44)),
+              border: Border.all(color: const Color(0xFF4A5060)),
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -908,11 +916,11 @@ class _MyHomePageState extends State<MyHomePage>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE1306C).withOpacity(0.15),
+                        color: const Color(0xFFDFD0B8).withOpacity(0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(Icons.upload,
-                          color: Color(0xFFE1306C), size: 20),
+                          color: Color(0xFFDFD0B8), size: 20),
                     ),
                     const SizedBox(width: 10),
                     const Text('Import Data',
@@ -922,11 +930,11 @@ class _MyHomePageState extends State<MyHomePage>
                 ),
                 const SizedBox(height: 8),
                 const Text('Paste JSON data to import accounts.',
-                    style: TextStyle(color: Color(0xFF6B6B8D), fontSize: 14)),
+                    style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _importController,
-                  style: const TextStyle(color: Color(0xFFE0E0E0)),
+                  style: const TextStyle(color: Color(0xFFDFD0B8)),
                   decoration: const InputDecoration(
                     labelText: 'Paste JSON here',
                     hintText: 'Paste your exported JSON data...',
@@ -941,7 +949,7 @@ class _MyHomePageState extends State<MyHomePage>
                   icon: const Icon(Icons.file_upload, size: 18),
                   label: const Text('Import JSON'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE1306C),
+                    backgroundColor: const Color(0xFFDFD0B8),
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -961,7 +969,7 @@ class _MyHomePageState extends State<MyHomePage>
         children: [
           _buildSettingsCard(
             icon: Icons.email_outlined,
-            iconColor: const Color(0xFFE1306C),
+            iconColor: const Color(0xFFDFD0B8),
             title: 'Email Settings',
             child: Row(
               children: [
@@ -971,10 +979,10 @@ class _MyHomePageState extends State<MyHomePage>
                     children: const [
                       Text('Show Email Input',
                           style: TextStyle(
-                              color: Color(0xFFE0E0E0), fontSize: 14)),
+                              color: Color(0xFFDFD0B8), fontSize: 14)),
                       Text('Toggle email field visibility in input form',
                           style: TextStyle(
-                              color: Color(0xFF6B6B8D), fontSize: 12)),
+                              color: Color(0xFF948979), fontSize: 12)),
                     ],
                   ),
                 ),
@@ -984,7 +992,7 @@ class _MyHomePageState extends State<MyHomePage>
                     setState(() => _showEmailInput = value);
                     _prefs.setBool('show_email_input', value);
                   },
-                  activeColor: const Color(0xFFE1306C),
+                  activeColor: const Color(0xFFDFD0B8),
                 ),
               ],
             ),
@@ -992,7 +1000,7 @@ class _MyHomePageState extends State<MyHomePage>
           const SizedBox(height: 12),
           _buildSettingsCard(
             icon: Icons.password_outlined,
-            iconColor: const Color(0xFF405DE6),
+            iconColor: const Color(0xFF948979),
             title: 'Password Method',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1023,16 +1031,16 @@ class _MyHomePageState extends State<MyHomePage>
           const SizedBox(height: 12),
           _buildSettingsCard(
             icon: Icons.info_outline,
-            iconColor: const Color(0xFFF56040),
+            iconColor: const Color(0xFF948979),
             title: 'About',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Text('Insta Saver v1.0',
-                    style: TextStyle(color: Color(0xFF9E9EB8), fontSize: 14)),
+                    style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
                 SizedBox(height: 2),
                 Text('Secure Instagram account manager',
-                    style: TextStyle(color: Color(0xFF6B6B8D), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFF948979), fontSize: 12)),
               ],
             ),
           ),
@@ -1049,9 +1057,9 @@ class _MyHomePageState extends State<MyHomePage>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E36),
+        color: const Color(0xFF2C3139),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2A2A44)),
+        border: Border.all(color: const Color(0xFF4A5060)),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -1084,14 +1092,14 @@ class _MyHomePageState extends State<MyHomePage>
     return [
       TextField(
         controller: _prefixController,
-        style: const TextStyle(color: Color(0xFFE0E0E0)),
+        style: const TextStyle(color: Color(0xFFDFD0B8)),
         decoration: InputDecoration(
           labelText: 'Password Prefix',
           hintText: 'Enter your password prefix',
-          prefixIcon: const Icon(Icons.text_fields, color: Color(0xFFE1306C)),
+          prefixIcon: const Icon(Icons.text_fields, color: Color(0xFFDFD0B8)),
           suffixIcon: IconButton(
-            icon: const Icon(Icons.content_copy, color: Color(0xFF9E9EB8)),
-            onPressed: _copyPassword,
+            icon: const Icon(Icons.content_copy, color: Color(0xFF948979)),
+            onPressed: _copyCurrentPassword,
           ),
         ),
       ),
@@ -1099,7 +1107,7 @@ class _MyHomePageState extends State<MyHomePage>
       Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: const Color(0xFF141428),
+          color: const Color(0xFF393E46),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -1108,7 +1116,7 @@ class _MyHomePageState extends State<MyHomePage>
             const Text('Current Password Format:',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF9E9EB8),
+                  color: Color(0xFF948979),
                   fontSize: 13,
                 )),
             const SizedBox(height: 4),
@@ -1117,11 +1125,11 @@ class _MyHomePageState extends State<MyHomePage>
                 style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFE1306C))),
+                    color: Color(0xFFDFD0B8))),
             const SizedBox(height: 6),
             Text(
                 'Example: If prefix is "Yaseen" and today is ${DateTime.now().day}, password will be: Yaseen@${DateTime.now().day.toString().padLeft(2, '0')}',
-                style: const TextStyle(color: Color(0xFF6B6B8D), fontSize: 11)),
+                style: const TextStyle(color: Color(0xFF948979), fontSize: 11)),
           ],
         ),
       ),
@@ -1133,7 +1141,7 @@ class _MyHomePageState extends State<MyHomePage>
       Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: const Color(0xFF141428),
+          color: const Color(0xFF393E46),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -1143,17 +1151,17 @@ class _MyHomePageState extends State<MyHomePage>
                 'Current Date: ${DateTime.now().day.toString().padLeft(2, '0')}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF9E9EB8),
+                  color: Color(0xFF948979),
                   fontSize: 13,
                 )),
             const SizedBox(height: 4),
             const Text(
                 'Generated passwords will be random mixed case letters (8-13 chars) appended with today\'s date (2 digits).',
-                style: TextStyle(color: Color(0xFF6B6B8D), fontSize: 11)),
+                style: TextStyle(color: Color(0xFF948979), fontSize: 11)),
             const SizedBox(height: 6),
             const Text(
                 'Total length: 10-15 characters. You can generate and edit in the Input tab.',
-                style: TextStyle(color: Color(0xFF6B6B8D), fontSize: 11)),
+                style: TextStyle(color: Color(0xFF948979), fontSize: 11)),
           ],
         ),
       ),
@@ -1164,10 +1172,10 @@ class _MyHomePageState extends State<MyHomePage>
       TextEditingController controller, String label, IconData icon) {
     return TextField(
       controller: controller,
-      style: const TextStyle(color: Color(0xFFE0E0E0)),
+      style: const TextStyle(color: Color(0xFFDFD0B8)),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: const Color(0xFFE1306C)),
+        prefixIcon: Icon(icon, color: const Color(0xFFDFD0B8)),
       ),
     );
   }
@@ -1178,7 +1186,7 @@ class _MyHomePageState extends State<MyHomePage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Password',
-              style: TextStyle(color: Color(0xFF9E9EB8), fontSize: 14)),
+              style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
           const SizedBox(height: 6),
           Row(
             children: [
@@ -1187,9 +1195,9 @@ class _MyHomePageState extends State<MyHomePage>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF141428),
+                    color: const Color(0xFF393E46),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF3A3A5C)),
+                    border: Border.all(color: const Color(0xFF4A5060)),
                   ),
                   child: Text(
                     _currentPassword.isEmpty
@@ -1199,17 +1207,17 @@ class _MyHomePageState extends State<MyHomePage>
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: _currentPassword.isEmpty
-                          ? const Color(0xFF6B6B8D)
-                          : const Color(0xFFE0E0E0),
+                          ? const Color(0xFF948979)
+                          : const Color(0xFFDFD0B8),
                     ),
                   ),
                 ),
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                onPressed: _copyPassword,
+                onPressed: _copyCurrentPassword,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF405DE6),
+                  backgroundColor: const Color(0xFF948979),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.all(12),
                 ),
@@ -1220,7 +1228,7 @@ class _MyHomePageState extends State<MyHomePage>
           const SizedBox(height: 4),
           Text(
               'Format: (prefix)@(today\'s date) • Today is ${DateTime.now().day.toString().padLeft(2, '0')}',
-              style: const TextStyle(color: Color(0xFF6B6B8D), fontSize: 11)),
+              style: const TextStyle(color: Color(0xFF948979), fontSize: 11)),
         ],
       );
     } else {
@@ -1228,14 +1236,14 @@ class _MyHomePageState extends State<MyHomePage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Password',
-              style: TextStyle(color: Color(0xFF9E9EB8), fontSize: 14)),
+              style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
           const SizedBox(height: 6),
           TextField(
             controller: _passwordController,
-            style: const TextStyle(color: Color(0xFFE0E0E0)),
+            style: const TextStyle(color: Color(0xFFDFD0B8)),
             decoration: InputDecoration(
               hintText: 'Generate or enter password',
-              prefixIcon: const Icon(Icons.lock, color: Color(0xFFE1306C)),
+              prefixIcon: const Icon(Icons.lock, color: Color(0xFFDFD0B8)),
               suffixIcon: Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: Row(
@@ -1243,13 +1251,13 @@ class _MyHomePageState extends State<MyHomePage>
                   children: [
                     IconButton(
                       icon: const Icon(Icons.refresh,
-                          color: Color(0xFF9E9EB8)),
+                          color: Color(0xFF948979)),
                       onPressed: _generateRandomPassword,
                     ),
                     IconButton(
                       icon: const Icon(Icons.content_copy,
-                          color: Color(0xFF9E9EB8)),
-                      onPressed: _copyPassword,
+                          color: Color(0xFF948979)),
+                      onPressed: _copyCurrentPassword,
                     ),
                   ],
                 ),
@@ -1258,7 +1266,7 @@ class _MyHomePageState extends State<MyHomePage>
           ),
           const SizedBox(height: 4),
           const Text('Format: Random mixed case letters + date • 10-15 chars',
-              style: TextStyle(color: Color(0xFF6B6B8D), fontSize: 11)),
+              style: TextStyle(color: Color(0xFF948979), fontSize: 11)),
         ],
       );
     }
