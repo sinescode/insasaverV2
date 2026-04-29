@@ -24,26 +24,26 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.dark,
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFFDFD0B8),
-          secondary: Color(0xFF948979),
-          surface: Color(0xFF2C3139),
-          onSurface: Color(0xFFDFD0B8),
-          background: Color(0xFF222831),
-          onBackground: Color(0xFFDFD0B8),
-          onPrimary: Color(0xFF222831),
-          onSecondary: Color(0xFF222831),
-          error: Color(0xFFEF4444),
-          tertiary: Color(0xFF948979),
-          surfaceContainerHighest: Color(0xFF393E46),
-          outline: Color(0xFF4A5060),
-          onSurfaceVariant: Color(0xFF948979),
+          primary: Color(0xFF818CF8),
+          secondary: Color(0xFFA78BFA),
+          surface: Color(0xFF1E1E2E),
+          onSurface: Color(0xFFE2E8F0),
+          background: Color(0xFF13131F),
+          onBackground: Color(0xFFE2E8F0),
+          onPrimary: Color(0xFF13131F),
+          onSecondary: Color(0xFF13131F),
+          error: Color(0xFFF87171),
+          tertiary: Color(0xFF34D399),
+          surfaceContainerHighest: Color(0xFF2A2A3E),
+          outline: Color(0xFF3A3A52),
+          onSurfaceVariant: Color(0xFF94A3B8),
         ),
         cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          color: const Color(0xFF2C3139),
+          color: const Color(0xFF1E1E2E),
           surfaceTintColor: Colors.transparent,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -65,72 +65,74 @@ class MyApp extends StatelessWidget {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: const Color(0xFF393E46),
+          fillColor: const Color(0xFF2A2A3E),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF4A5060)),
+            borderSide: const BorderSide(color: Color(0xFF3A3A52)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF4A5060)),
+            borderSide: const BorderSide(color: Color(0xFF3A3A52)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFFDFD0B8), width: 2),
+            borderSide: const BorderSide(color: Color(0xFF818CF8), width: 2),
           ),
-          labelStyle: const TextStyle(color: Color(0xFF948979)),
-          hintStyle: const TextStyle(color: Color(0xFF948979)),
+          labelStyle: const TextStyle(color: Color(0xFF94A3B8)),
+          hintStyle: const TextStyle(color: Color(0xFF64748B)),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
         appBarTheme: const AppBarTheme(
           elevation: 0,
-          backgroundColor: Color(0xFF222831),
-          foregroundColor: Color(0xFFDFD0B8),
+          backgroundColor: Color(0xFF13131F),
+          foregroundColor: Color(0xFFE2E8F0),
           surfaceTintColor: Colors.transparent,
         ),
-        scaffoldBackgroundColor: const Color(0xFF222831),
+        scaffoldBackgroundColor: const Color(0xFF13131F),
         dialogTheme: DialogThemeData(
-          backgroundColor: const Color(0xFF2C3139),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: const Color(0xFF1E1E2E),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
         snackBarTheme: SnackBarThemeData(
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         dividerTheme: const DividerThemeData(
-          color: Color(0xFF393E46),
+          color: Color(0xFF2A2A3E),
         ),
         switchTheme: SwitchThemeData(
           thumbColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFFDFD0B8);
+              return const Color(0xFF818CF8);
             }
-            return const Color(0xFF948979);
+            return const Color(0xFF64748B);
           }),
           trackColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFFDFD0B8).withOpacity(0.4);
+              return const Color(0xFF818CF8).withOpacity(0.35);
             }
-            return const Color(0xFF393E46);
+            return const Color(0xFF2A2A3E);
           }),
         ),
         segmentedButtonTheme: SegmentedButtonThemeData(
           style: ButtonStyle(
             backgroundColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
-                return const Color(0xFFDFD0B8);
+                return const Color(0xFF818CF8);
               }
-              return const Color(0xFF393E46);
+              return const Color(0xFF2A2A3E);
             }),
             foregroundColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
-                return const Color(0xFF222831);
+                return const Color(0xFF13131F);
               }
-              return const Color(0xFF948979);
+              return const Color(0xFF94A3B8);
             }),
             side: WidgetStateProperty.all(
-              const BorderSide(color: Color(0xFF4A5060)),
+              const BorderSide(color: Color(0xFF3A3A52)),
             ),
             shape: WidgetStateProperty.all(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -198,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   bool _showEmailInput = true;
   int _passwordMethod = 0;
+  bool _autoRandomPassword = false;
 
   @override
   void initState() {
@@ -223,6 +226,7 @@ class _MyHomePageState extends State<MyHomePage>
     _passwordController.text = _prefs.getString('random_password') ?? '';
     _showEmailInput = _prefs.getBool('show_email_input') ?? true;
     _passwordMethod = _prefs.getInt('password_method') ?? 0;
+    _autoRandomPassword = _prefs.getBool('auto_random_password') ?? false;
 
     if (_passwordMethod == 1 && _passwordController.text.isEmpty) {
       _generateRandomPassword();
@@ -272,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   void _copyCurrentPassword() {
     Clipboard.setData(ClipboardData(text: _currentPassword));
-    _showSnackBar('Password copied to clipboard', Icons.content_copy);
+    _showSnackBar('Password copied', Icons.content_copy);
   }
 
   void _submit() {
@@ -310,7 +314,7 @@ class _MyHomePageState extends State<MyHomePage>
     _usernameController.clear();
     _auth_codeController.clear();
     _passwordController.clear();
-    if (_passwordMethod == 1) {
+    if (_passwordMethod == 1 && _autoRandomPassword) {
       _generateRandomPassword();
     }
   }
@@ -321,15 +325,21 @@ class _MyHomePageState extends State<MyHomePage>
       SnackBar(
         content: Row(
           children: [
-            Icon(icon, color: Colors.white, size: 20),
-            const SizedBox(width: 12),
-            Expanded(child: Text(message)),
+            Icon(icon,
+                color: isError
+                    ? const Color(0xFFF87171)
+                    : const Color(0xFF818CF8),
+                size: 18),
+            const SizedBox(width: 10),
+            Expanded(
+                child: Text(message,
+                    style: const TextStyle(color: Color(0xFFE2E8F0)))),
           ],
         ),
-        backgroundColor:
-            isError ? const Color(0xFFEF4444) : const Color(0xFF393E46),
+        backgroundColor: const Color(0xFF1E1E2E),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 2),
       ),
@@ -342,7 +352,8 @@ class _MyHomePageState extends State<MyHomePage>
     if (status.isGranted) {
       final Directory? baseDir = await getExternalStorageDirectory();
       if (baseDir != null) {
-        final String downloadPath = '/storage/emulated/0/Download/insta_saver';
+        const String downloadPath =
+            '/storage/emulated/0/Download/insta_saver';
         final Directory dir = Directory(downloadPath);
         if (!await dir.exists()) {
           await dir.create(recursive: true);
@@ -355,7 +366,7 @@ class _MyHomePageState extends State<MyHomePage>
         final String jsonData =
             jsonEncode(_accounts.map((acc) => acc.toJson()).toList());
         await file.writeAsString(jsonData);
-        _showSnackBar('Downloaded to Downloads/insta_saver', Icons.download);
+        _showSnackBar('Saved to Downloads/insta_saver', Icons.download);
       }
     } else {
       _showSnackBar('Storage permission denied', Icons.error, isError: true);
@@ -373,7 +384,7 @@ class _MyHomePageState extends State<MyHomePage>
       _saveAccounts();
       _importController.clear();
       _showSnackBar(
-          '${newAccounts.length} accounts imported successfully', Icons.upload);
+          '${newAccounts.length} accounts imported', Icons.upload);
     } catch (e) {
       _showSnackBar('Invalid JSON format', Icons.error, isError: true);
     }
@@ -409,34 +420,39 @@ class _MyHomePageState extends State<MyHomePage>
     _showSnackBar('Password copied', Icons.lock);
   }
 
+  void _copyAuthCode(int index) {
+    if (_accounts[index].auth_code.isNotEmpty) {
+      Clipboard.setData(ClipboardData(text: _accounts[index].auth_code));
+      _showSnackBar('2FA code copied', Icons.security);
+    }
+  }
+
   void _deleteAccount(int index) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF2C3139),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: const Text('Delete Account',
-              style: TextStyle(color: Color(0xFFDFD0B8))),
-          content: const Text('Are you sure you want to delete this account?',
-              style: TextStyle(color: Color(0xFF948979))),
+              style: TextStyle(color: Color(0xFFE2E8F0))),
+          content: const Text(
+              'Are you sure you want to delete this account?',
+              style: TextStyle(color: Color(0xFF94A3B8))),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancel',
-                  style: TextStyle(color: Color(0xFF948979))),
+                  style: TextStyle(color: Color(0xFF94A3B8))),
             ),
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  _accounts.removeAt(index);
-                });
+                setState(() => _accounts.removeAt(index));
                 _saveAccounts();
                 Navigator.of(context).pop();
                 _showSnackBar('Account deleted', Icons.delete);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEF4444),
+                backgroundColor: const Color(0xFFF87171).withOpacity(0.15),
+                foregroundColor: const Color(0xFFF87171),
               ),
               child: const Text('Delete'),
             ),
@@ -448,35 +464,31 @@ class _MyHomePageState extends State<MyHomePage>
 
   void _clearAll() {
     if (_accounts.isEmpty) return;
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF2C3139),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Text('Clear All Accounts',
-              style: TextStyle(color: Color(0xFFDFD0B8))),
+          title: const Text('Clear All',
+              style: TextStyle(color: Color(0xFFE2E8F0))),
           content: Text(
-              'Are you sure you want to delete all ${_accounts.length} accounts?',
-              style: const TextStyle(color: Color(0xFF948979))),
+              'Delete all ${_accounts.length} accounts?',
+              style: const TextStyle(color: Color(0xFF94A3B8))),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancel',
-                  style: TextStyle(color: Color(0xFF948979))),
+                  style: TextStyle(color: Color(0xFF94A3B8))),
             ),
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  _accounts.clear();
-                });
+                setState(() => _accounts.clear());
                 _saveAccounts();
                 Navigator.of(context).pop();
                 _showSnackBar('All accounts deleted', Icons.clear_all);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEF4444),
+                backgroundColor: const Color(0xFFF87171).withOpacity(0.15),
+                foregroundColor: const Color(0xFFF87171),
               ),
               child: const Text('Clear All'),
             ),
@@ -493,38 +505,43 @@ class _MyHomePageState extends State<MyHomePage>
         title: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFFDFD0B8),
-                    Color(0xFF948979),
-                  ],
+                  colors: [Color(0xFF818CF8), Color(0xFFA78BFA)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child:
-                  const Icon(Icons.manage_accounts, color: Color(0xFF222831), size: 24),
+              child: const Icon(Icons.manage_accounts,
+                  color: Color(0xFF13131F), size: 22),
             ),
             const SizedBox(width: 12),
             const Text('Account Manager',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    letterSpacing: -0.3)),
           ],
         ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: const Color(0xFFDFD0B8),
-          labelColor: const Color(0xFFDFD0B8),
-          unselectedLabelColor: const Color(0xFF948979),
+          indicatorColor: const Color(0xFF818CF8),
           indicatorWeight: 3,
-          labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-          unselectedLabelStyle: const TextStyle(fontSize: 12),
+          labelColor: const Color(0xFF818CF8),
+          unselectedLabelColor: const Color(0xFF64748B),
+          labelStyle:
+              const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+          unselectedLabelStyle:
+              const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+          dividerColor: const Color(0xFF2A2A3E),
           tabs: const [
-            Tab(icon: Icon(Icons.add, size: 20), text: 'Input'),
-            Tab(icon: Icon(Icons.bookmark, size: 20), text: 'Saved'),
-            Tab(icon: Icon(Icons.swap_vert, size: 20), text: 'Import/Export'),
-            Tab(icon: Icon(Icons.settings, size: 20), text: 'Settings'),
+            Tab(icon: Icon(Icons.add_circle_outline, size: 18), text: 'Input'),
+            Tab(icon: Icon(Icons.bookmark_border, size: 18), text: 'Saved'),
+            Tab(icon: Icon(Icons.swap_vert, size: 18), text: 'Transfer'),
+            Tab(icon: Icon(Icons.tune, size: 18), text: 'Settings'),
           ],
         ),
       ),
@@ -546,50 +563,54 @@ class _MyHomePageState extends State<MyHomePage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (_editingIndex != null)
+          if (_editingIndex != null) ...[
             Container(
-              padding: const EdgeInsets.all(12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: const Color(0xFF948979).withOpacity(0.12),
+                color: const Color(0xFF818CF8).withOpacity(0.08),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                    color: const Color(0xFF948979).withOpacity(0.3)),
+                    color: const Color(0xFF818CF8).withOpacity(0.25)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.edit, color: Color(0xFF948979), size: 18),
+                  const Icon(Icons.edit_outlined,
+                      color: Color(0xFF818CF8), size: 16),
                   const SizedBox(width: 8),
                   Text('Editing Account #${_editingIndex! + 1}',
                       style: const TextStyle(
-                        color: Color(0xFF948979),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        color: Color(0xFF818CF8),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
                       )),
                   const Spacer(),
-                  TextButton(
-                    onPressed: () {
+                  GestureDetector(
+                    onTap: () {
                       setState(() => _editingIndex = null);
                       _clearFields();
                     },
                     child: const Text('Cancel',
-                        style: TextStyle(color: Color(0xFF948979), fontSize: 12)),
+                        style:
+                            TextStyle(color: Color(0xFF94A3B8), fontSize: 13)),
                   ),
                 ],
               ),
             ),
-          if (_editingIndex != null) const SizedBox(height: 12),
-
+            const SizedBox(height: 14),
+          ],
           if (_showEmailInput) ...[
             _buildInputField(
-                _emailController, 'Email Address (Optional)', Icons.email),
+                _emailController, 'Email Address (Optional)', Icons.email_outlined),
             const SizedBox(height: 12),
           ],
-          _buildInputField(_usernameController, 'Username', Icons.person),
+          _buildInputField(
+              _usernameController, 'Username', Icons.person_outline),
           const SizedBox(height: 12),
           _buildPasswordField(),
           const SizedBox(height: 12),
           _buildInputField(
-              _auth_codeController, '2FA Code (Optional)', Icons.security),
+              _auth_codeController, '2FA Code (Optional)', Icons.shield_outlined),
           const SizedBox(height: 20),
           Row(
             children: [
@@ -597,12 +618,15 @@ class _MyHomePageState extends State<MyHomePage>
                 child: ElevatedButton.icon(
                   onPressed: _submit,
                   icon: Icon(
-                      _editingIndex != null ? Icons.update : Icons.save,
-                      size: 20),
-                  label: Text(_editingIndex != null ? 'Update' : 'Save Account'),
+                      _editingIndex != null
+                          ? Icons.update
+                          : Icons.save_outlined,
+                      size: 18),
+                  label: Text(_editingIndex != null ? 'Update' : 'Save Account',
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFDFD0B8),
-                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xFF818CF8),
+                    foregroundColor: const Color(0xFF13131F),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
@@ -611,11 +635,11 @@ class _MyHomePageState extends State<MyHomePage>
               ElevatedButton(
                 onPressed: _clearFields,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF393E46),
-                  foregroundColor: const Color(0xFF948979),
+                  backgroundColor: const Color(0xFF2A2A3E),
+                  foregroundColor: const Color(0xFF94A3B8),
                   padding: const EdgeInsets.all(14),
                 ),
-                child: const Icon(Icons.clear, size: 20),
+                child: const Icon(Icons.clear, size: 18),
               ),
             ],
           ),
@@ -629,32 +653,41 @@ class _MyHomePageState extends State<MyHomePage>
       children: [
         if (_accounts.isNotEmpty)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: const BoxDecoration(
-              color: Color(0xFF222831),
-              border: Border(
-                bottom: BorderSide(color: Color(0xFF4A5060)),
-              ),
+              color: Color(0xFF13131F),
+              border:
+                  Border(bottom: BorderSide(color: Color(0xFF2A2A3E))),
             ),
             child: Row(
               children: [
-                Expanded(
-                  child: Text('${_accounts.length} accounts saved',
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF818CF8).withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text('${_accounts.length} accounts',
                       style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF948979))),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF818CF8))),
                 ),
-                ElevatedButton.icon(
+                const Spacer(),
+                TextButton.icon(
                   onPressed: _clearAll,
-                  icon: const Icon(Icons.clear_all, size: 16),
-                  label: const Text('Clear All'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEF4444).withOpacity(0.15),
-                    foregroundColor: const Color(0xFFEF4444),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    elevation: 0,
+                  icon: const Icon(Icons.delete_sweep_outlined,
+                      size: 16, color: Color(0xFFF87171)),
+                  label: const Text('Clear All',
+                      style: TextStyle(
+                          color: Color(0xFFF87171),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500)),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 6),
                   ),
                 ),
               ],
@@ -666,16 +699,25 @@ class _MyHomePageState extends State<MyHomePage>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.inbox_outlined,
-                          size: 64, color: Colors.grey.shade700),
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2A2A3E),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Icon(Icons.inbox_outlined,
+                            size: 40, color: Color(0xFF3A3A52)),
+                      ),
                       const SizedBox(height: 16),
-                      const Text('No accounts saved yet',
+                      const Text('No accounts yet',
                           style: TextStyle(
-                              fontSize: 16, color: Color(0xFF948979))),
-                      const SizedBox(height: 6),
-                      const Text('Add your first account in the Input tab',
-                          style:
-                              TextStyle(color: Color(0xFF948979), fontSize: 12)),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF94A3B8))),
+                      const SizedBox(height: 4),
+                      const Text('Add accounts in the Input tab',
+                          style: TextStyle(
+                              color: Color(0xFF64748B), fontSize: 13)),
                     ],
                   ),
                 )
@@ -685,8 +727,7 @@ class _MyHomePageState extends State<MyHomePage>
                   itemBuilder: (context, i) {
                     final int accountIndex = _accounts.length - 1 - i;
                     final Account acc = _accounts[accountIndex];
-                    final int cardNumber = i + 1;
-                    return _buildSavedCard(acc, accountIndex, cardNumber);
+                    return _buildSavedCard(acc, accountIndex, i + 1);
                   },
                 ),
         ),
@@ -698,33 +739,36 @@ class _MyHomePageState extends State<MyHomePage>
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF2C3139),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF4A5060)),
+        color: const Color(0xFF1E1E2E),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF2A2A3E)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header
             Row(
               children: [
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 34,
+                  height: 34,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFFDFD0B8), Color(0xFF948979)],
+                      colors: [Color(0xFF818CF8), Color(0xFFA78BFA)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     '$cardNumber',
                     style: const TextStyle(
-                      color: Color(0xFF222831),
+                      color: Color(0xFF13131F),
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
                   ),
                 ),
@@ -738,46 +782,51 @@ class _MyHomePageState extends State<MyHomePage>
                             style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFFDFD0B8))),
+                                color: Color(0xFFE2E8F0))),
                       Text('@${acc.username}',
                           style: const TextStyle(
-                              color: Color(0xFF948979), fontSize: 13)),
+                              color: Color(0xFF94A3B8), fontSize: 13)),
                     ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 10),
+            // Info block
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFF393E46),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFF13131F),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
                 children: [
                   Row(
                     children: [
                       const Icon(Icons.lock_outline,
-                          size: 14, color: Color(0xFF948979)),
+                          size: 13, color: Color(0xFF64748B)),
                       const SizedBox(width: 6),
                       Expanded(
-                          child: Text('Password: ${acc.password}',
+                          child: Text(acc.password,
                               style: const TextStyle(
-                                  fontSize: 13, color: Color(0xFF948979)))),
+                                  fontSize: 13,
+                                  color: Color(0xFF94A3B8),
+                                  fontFamily: 'monospace'))),
                     ],
                   ),
                   if (acc.auth_code.isNotEmpty) ...[
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.security_outlined,
-                            size: 14, color: Color(0xFF948979)),
+                        const Icon(Icons.shield_outlined,
+                            size: 13, color: Color(0xFF64748B)),
                         const SizedBox(width: 6),
                         Expanded(
-                            child: Text('2FA: ${acc.auth_code}',
+                            child: Text(acc.auth_code,
                                 style: const TextStyle(
-                                    fontSize: 13, color: Color(0xFF948979)))),
+                                    fontSize: 13,
+                                    color: Color(0xFF94A3B8),
+                                    fontFamily: 'monospace'))),
                       ],
                     ),
                   ],
@@ -785,34 +834,40 @@ class _MyHomePageState extends State<MyHomePage>
               ),
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            // Action buttons
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
               children: [
                 _actionButton(
                   icon: Icons.edit_outlined,
                   label: 'Edit',
-                  color: const Color(0xFF948979),
+                  color: const Color(0xFF94A3B8),
                   onTap: () => _editAccount(accountIndex),
                 ),
-                const SizedBox(width: 4),
                 _actionButton(
-                  icon: Icons.person,
+                  icon: Icons.person_outline,
                   label: 'User',
-                  color: const Color(0xFFDFD0B8),
+                  color: const Color(0xFF818CF8),
                   onTap: () => _copyUsername(accountIndex),
                 ),
-                const SizedBox(width: 4),
                 _actionButton(
                   icon: Icons.lock_outline,
                   label: 'Pass',
-                  color: const Color(0xFFDFD0B8),
+                  color: const Color(0xFFA78BFA),
                   onTap: () => _copyPassword(accountIndex),
                 ),
-                const SizedBox(width: 4),
+                if (acc.auth_code.isNotEmpty)
+                  _actionButton(
+                    icon: Icons.shield_outlined,
+                    label: '2FA',
+                    color: const Color(0xFF34D399),
+                    onTap: () => _copyAuthCode(accountIndex),
+                  ),
                 _actionButton(
                   icon: Icons.delete_outline,
                   label: 'Delete',
-                  color: const Color(0xFFEF4444),
+                  color: const Color(0xFFF87171),
                   onTap: () => _deleteAccount(accountIndex),
                 ),
               ],
@@ -830,19 +885,24 @@ class _MyHomePageState extends State<MyHomePage>
     required VoidCallback onTap,
   }) {
     return Material(
-      color: color.withOpacity(0.1),
+      color: color.withOpacity(0.08),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
+        splashColor: color.withOpacity(0.15),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 14, color: color),
-              const SizedBox(width: 4),
-              Text(label, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600)),
+              Icon(icon, size: 13, color: color),
+              const SizedBox(width: 5),
+              Text(label,
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: color,
+                      fontWeight: FontWeight.w600)),
             ],
           ),
         ),
@@ -856,88 +916,38 @@ class _MyHomePageState extends State<MyHomePage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C3139),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF4A5060)),
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF948979).withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.download,
-                          color: Color(0xFF948979), size: 20),
-                    ),
-                    const SizedBox(width: 10),
-                    const Text('Export Data',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                    'Download all your saved accounts as a JSON file.',
-                    style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
-                const SizedBox(height: 14),
-                ElevatedButton.icon(
-                  onPressed: _downloadJson,
-                  icon: const Icon(Icons.file_download, size: 18),
-                  label: const Text('Download JSON'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF948979),
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
+          _buildCard(
+            icon: Icons.file_download_outlined,
+            iconColor: const Color(0xFF818CF8),
+            title: 'Export',
+            subtitle: 'Download all accounts as JSON',
+            child: ElevatedButton.icon(
+              onPressed: _downloadJson,
+              icon: const Icon(Icons.download_outlined, size: 17),
+              label: const Text('Download JSON',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF818CF8),
+                foregroundColor: const Color(0xFF13131F),
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C3139),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF4A5060)),
-            ),
-            padding: const EdgeInsets.all(16),
+          const SizedBox(height: 14),
+          _buildCard(
+            icon: Icons.file_upload_outlined,
+            iconColor: const Color(0xFFA78BFA),
+            title: 'Import',
+            subtitle: 'Paste JSON data to import accounts',
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFDFD0B8).withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.upload,
-                          color: Color(0xFFDFD0B8), size: 20),
-                    ),
-                    const SizedBox(width: 10),
-                    const Text('Import Data',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                const Text('Paste JSON data to import accounts.',
-                    style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
-                const SizedBox(height: 12),
                 TextField(
                   controller: _importController,
-                  style: const TextStyle(color: Color(0xFFDFD0B8)),
+                  style: const TextStyle(
+                      color: Color(0xFFE2E8F0), fontSize: 13),
                   decoration: const InputDecoration(
                     labelText: 'Paste JSON here',
-                    hintText: 'Paste your exported JSON data...',
+                    hintText: '[{"username": "...", "password": "..."}]',
                     alignLabelWithHint: true,
                   ),
                   maxLines: 6,
@@ -946,11 +956,12 @@ class _MyHomePageState extends State<MyHomePage>
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: _importJson,
-                  icon: const Icon(Icons.file_upload, size: 18),
-                  label: const Text('Import JSON'),
+                  icon: const Icon(Icons.upload_outlined, size: 17),
+                  label: const Text('Import JSON',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFDFD0B8),
-                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xFFA78BFA),
+                    foregroundColor: const Color(0xFF13131F),
                   ),
                 ),
               ],
@@ -967,48 +978,32 @@ class _MyHomePageState extends State<MyHomePage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildSettingsCard(
+          _buildCard(
             icon: Icons.email_outlined,
-            iconColor: const Color(0xFFDFD0B8),
-            title: 'Email Settings',
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('Show Email Input',
-                          style: TextStyle(
-                              color: Color(0xFFDFD0B8), fontSize: 14)),
-                      Text('Toggle email field visibility in input form',
-                          style: TextStyle(
-                              color: Color(0xFF948979), fontSize: 12)),
-                    ],
-                  ),
-                ),
-                Switch(
-                  value: _showEmailInput,
-                  onChanged: (value) {
-                    setState(() => _showEmailInput = value);
-                    _prefs.setBool('show_email_input', value);
-                  },
-                  activeColor: const Color(0xFFDFD0B8),
-                ),
-              ],
+            iconColor: const Color(0xFF818CF8),
+            title: 'Display',
+            child: _buildToggleRow(
+              label: 'Show Email Field',
+              subtitle: 'Toggle email input visibility',
+              value: _showEmailInput,
+              onChanged: (value) {
+                setState(() => _showEmailInput = value);
+                _prefs.setBool('show_email_input', value);
+              },
             ),
           ),
-          const SizedBox(height: 12),
-          _buildSettingsCard(
+          const SizedBox(height: 14),
+          _buildCard(
             icon: Icons.password_outlined,
-            iconColor: const Color(0xFF948979),
+            iconColor: const Color(0xFFA78BFA),
             title: 'Password Method',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SegmentedButton<int>(
                   segments: const [
-                    ButtonSegment<int>(value: 0, label: Text('Prefix')),
-                    ButtonSegment<int>(value: 1, label: Text('Word')),
+                    ButtonSegment<int>(value: 0, label: Text('Prefix Mode')),
+                    ButtonSegment<int>(value: 1, label: Text('Word Mode')),
                   ],
                   selected: {_passwordMethod},
                   onSelectionChanged: (Set<int> newSelection) {
@@ -1024,23 +1019,41 @@ class _MyHomePageState extends State<MyHomePage>
                 ),
                 const SizedBox(height: 16),
                 if (_passwordMethod == 0) ..._buildPrefixMethodSettings(),
-                if (_passwordMethod == 1) ..._buildWordMethodSettings(),
+                if (_passwordMethod == 1) ...[
+                  ..._buildWordMethodSettings(),
+                  const SizedBox(height: 14),
+                  const Divider(color: Color(0xFF2A2A3E)),
+                  const SizedBox(height: 10),
+                  _buildToggleRow(
+                    label: 'Auto Random Password',
+                    subtitle: 'Generate a new password after each save',
+                    value: _autoRandomPassword,
+                    onChanged: (value) {
+                      setState(() => _autoRandomPassword = value);
+                      _prefs.setBool('auto_random_password', value);
+                    },
+                  ),
+                ],
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          _buildSettingsCard(
+          const SizedBox(height: 14),
+          _buildCard(
             icon: Icons.info_outline,
-            iconColor: const Color(0xFF948979),
+            iconColor: const Color(0xFF64748B),
             title: 'About',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Text('Insta Saver v1.0',
-                    style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
+                    style: TextStyle(
+                        color: Color(0xFFE2E8F0),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14)),
                 SizedBox(height: 2),
                 Text('Secure Instagram account manager',
-                    style: TextStyle(color: Color(0xFF948979), fontSize: 12)),
+                    style:
+                        TextStyle(color: Color(0xFF64748B), fontSize: 12)),
               ],
             ),
           ),
@@ -1049,17 +1062,47 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
 
-  Widget _buildSettingsCard({
+  Widget _buildToggleRow({
+    required String label,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: const TextStyle(
+                      color: Color(0xFFE2E8F0),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500)),
+              const SizedBox(height: 2),
+              Text(subtitle,
+                  style: const TextStyle(
+                      color: Color(0xFF64748B), fontSize: 12)),
+            ],
+          ),
+        ),
+        Switch(value: value, onChanged: onChanged),
+      ],
+    );
+  }
+
+  Widget _buildCard({
     required IconData icon,
     required Color iconColor,
     required String title,
+    String? subtitle,
     required Widget child,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF2C3139),
+        color: const Color(0xFF1E1E2E),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF4A5060)),
+        border: Border.all(color: const Color(0xFF2A2A3E)),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -1070,15 +1113,26 @@ class _MyHomePageState extends State<MyHomePage>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
+                  color: iconColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: iconColor, size: 20),
+                child: Icon(icon, color: iconColor, size: 18),
               ),
               const SizedBox(width: 10),
-              Text(title,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w700)),
+                    if (subtitle != null)
+                      Text(subtitle,
+                          style: const TextStyle(
+                              color: Color(0xFF64748B), fontSize: 12)),
+                  ],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -1092,44 +1146,49 @@ class _MyHomePageState extends State<MyHomePage>
     return [
       TextField(
         controller: _prefixController,
-        style: const TextStyle(color: Color(0xFFDFD0B8)),
+        style: const TextStyle(color: Color(0xFFE2E8F0)),
         decoration: InputDecoration(
           labelText: 'Password Prefix',
-          hintText: 'Enter your password prefix',
-          prefixIcon: const Icon(Icons.text_fields, color: Color(0xFFDFD0B8)),
+          hintText: 'e.g. Yaseen',
+          prefixIcon:
+              const Icon(Icons.text_fields, color: Color(0xFF818CF8)),
           suffixIcon: IconButton(
-            icon: const Icon(Icons.content_copy, color: Color(0xFF948979)),
+            icon: const Icon(Icons.content_copy,
+                color: Color(0xFF94A3B8), size: 18),
             onPressed: _copyCurrentPassword,
           ),
         ),
       ),
       const SizedBox(height: 12),
       Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF393E46),
-          borderRadius: BorderRadius.circular(8),
+          color: const Color(0xFF13131F),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Current Password Format:',
+            const Text('Preview',
                 style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF948979),
-                  fontSize: 13,
-                )),
-            const SizedBox(height: 4),
-            Text(
-                '${_prefixController.text.isNotEmpty ? _prefixController.text : '(prefix)'}@${DateTime.now().day.toString().padLeft(2, '0')}',
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFDFD0B8))),
+                    color: Color(0xFF64748B),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.5)),
             const SizedBox(height: 6),
             Text(
-                'Example: If prefix is "Yaseen" and today is ${DateTime.now().day}, password will be: Yaseen@${DateTime.now().day.toString().padLeft(2, '0')}',
-                style: const TextStyle(color: Color(0xFF948979), fontSize: 11)),
+              '${_prefixController.text.isNotEmpty ? _prefixController.text : 'prefix'}@${DateTime.now().day.toString().padLeft(2, '0')}',
+              style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF818CF8),
+                  fontFamily: 'monospace'),
+            ),
+            const SizedBox(height: 6),
+            Text(
+                'Pattern: (prefix)@(day) — today is day ${DateTime.now().day.toString().padLeft(2, '0')}',
+                style: const TextStyle(
+                    color: Color(0xFF64748B), fontSize: 11)),
           ],
         ),
       ),
@@ -1139,29 +1198,25 @@ class _MyHomePageState extends State<MyHomePage>
   List<Widget> _buildWordMethodSettings() {
     return [
       Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF393E46),
-          borderRadius: BorderRadius.circular(8),
+          color: const Color(0xFF13131F),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                'Current Date: ${DateTime.now().day.toString().padLeft(2, '0')}',
+                'Today: ${DateTime.now().day.toString().padLeft(2, '0')}',
                 style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF948979),
-                  fontSize: 13,
-                )),
+                    color: Color(0xFF64748B),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500)),
             const SizedBox(height: 4),
             const Text(
-                'Generated passwords will be random mixed case letters (8-13 chars) appended with today\'s date (2 digits).',
-                style: TextStyle(color: Color(0xFF948979), fontSize: 11)),
-            const SizedBox(height: 6),
-            const Text(
-                'Total length: 10-15 characters. You can generate and edit in the Input tab.',
-                style: TextStyle(color: Color(0xFF948979), fontSize: 11)),
+                'Random mixed-case letters (8–13 chars) + today\'s 2-digit date. Total: 10–15 characters.',
+                style:
+                    TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
           ],
         ),
       ),
@@ -1172,10 +1227,10 @@ class _MyHomePageState extends State<MyHomePage>
       TextEditingController controller, String label, IconData icon) {
     return TextField(
       controller: controller,
-      style: const TextStyle(color: Color(0xFFDFD0B8)),
+      style: const TextStyle(color: Color(0xFFE2E8F0)),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: const Color(0xFFDFD0B8)),
+        prefixIcon: Icon(icon, color: const Color(0xFF818CF8), size: 20),
       ),
     );
   }
@@ -1186,29 +1241,33 @@ class _MyHomePageState extends State<MyHomePage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Password',
-              style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
+              style: TextStyle(
+                  color: Color(0xFF94A3B8),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500)),
           const SizedBox(height: 6),
           Row(
             children: [
               Expanded(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF393E46),
+                    color: const Color(0xFF2A2A3E),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF4A5060)),
+                    border: Border.all(color: const Color(0xFF3A3A52)),
                   ),
                   child: Text(
                     _currentPassword.isEmpty
-                        ? 'Configure password in Settings'
+                        ? 'Set a prefix in Settings'
                         : _currentPassword,
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'monospace',
                       color: _currentPassword.isEmpty
-                          ? const Color(0xFF948979)
-                          : const Color(0xFFDFD0B8),
+                          ? const Color(0xFF64748B)
+                          : const Color(0xFF818CF8),
                     ),
                   ),
                 ),
@@ -1217,57 +1276,52 @@ class _MyHomePageState extends State<MyHomePage>
               ElevatedButton(
                 onPressed: _copyCurrentPassword,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF948979),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.all(12),
+                  backgroundColor: const Color(0xFF818CF8).withOpacity(0.12),
+                  foregroundColor: const Color(0xFF818CF8),
+                  padding: const EdgeInsets.all(14),
+                  elevation: 0,
                 ),
-                child: const Icon(Icons.content_copy, size: 18),
+                child: const Icon(Icons.content_copy, size: 17),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-              'Format: (prefix)@(today\'s date) • Today is ${DateTime.now().day.toString().padLeft(2, '0')}',
-              style: const TextStyle(color: Color(0xFF948979), fontSize: 11)),
+              'Format: (prefix)@${DateTime.now().day.toString().padLeft(2, '0')}',
+              style: const TextStyle(
+                  color: Color(0xFF64748B), fontSize: 11)),
         ],
       );
     } else {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Password',
-              style: TextStyle(color: Color(0xFF948979), fontSize: 14)),
-          const SizedBox(height: 6),
-          TextField(
-            controller: _passwordController,
-            style: const TextStyle(color: Color(0xFFDFD0B8)),
-            decoration: InputDecoration(
-              hintText: 'Generate or enter password',
-              prefixIcon: const Icon(Icons.lock, color: Color(0xFFDFD0B8)),
-              suffixIcon: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh,
-                          color: Color(0xFF948979)),
-                      onPressed: _generateRandomPassword,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.content_copy,
-                          color: Color(0xFF948979)),
-                      onPressed: _copyCurrentPassword,
-                    ),
-                  ],
+      return TextField(
+        controller: _passwordController,
+        style: const TextStyle(
+            color: Color(0xFFE2E8F0), fontFamily: 'monospace'),
+        decoration: InputDecoration(
+          labelText: 'Password',
+          prefixIcon: const Icon(Icons.lock_outline,
+              color: Color(0xFF818CF8), size: 20),
+          suffixIcon: Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.refresh_outlined,
+                      color: Color(0xFF94A3B8), size: 18),
+                  onPressed: _generateRandomPassword,
+                  tooltip: 'Generate new',
                 ),
-              ),
+                IconButton(
+                  icon: const Icon(Icons.content_copy,
+                      color: Color(0xFF94A3B8), size: 18),
+                  onPressed: _copyCurrentPassword,
+                  tooltip: 'Copy',
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 4),
-          const Text('Format: Random mixed case letters + date • 10-15 chars',
-              style: TextStyle(color: Color(0xFF948979), fontSize: 11)),
-        ],
+        ),
       );
     }
   }
